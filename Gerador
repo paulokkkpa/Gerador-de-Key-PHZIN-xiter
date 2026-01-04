@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>PAULO.XT • Key System</title>
+
+<style>
+body {
+    background:#0c0e12;
+    font-family: Arial, sans-serif;
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+.box {
+    background:#121620;
+    padding:20px;
+    border-radius:15px;
+    width:340px;
+    box-shadow:0 0 30px rgba(0,170,255,.5);
+}
+h2 {
+    text-align:center;
+}
+input, select, button {
+    width:100%;
+    margin-top:10px;
+    padding:10px;
+    border-radius:8px;
+    border:none;
+}
+input, select {
+    background:#1a1e2b;
+    color:white;
+}
+button {
+    background:#00aaff;
+    font-weight:bold;
+    color:white;
+    cursor:pointer;
+}
+.result {
+    margin-top:15px;
+    background:#0c0e12;
+    padding:10px;
+    border-radius:8px;
+    word-break:break-all;
+}
+</style>
+</head>
+
+<body>
+<div class="box">
+<h2>🔐 PAULO.XT</h2>
+
+<input type="password" id="senha" placeholder="Senha Admin">
+
+<select id="dias">
+    <option value="1">1 Dia</option>
+    <option value="7">7 Dias</option>
+    <option value="30">30 Dias</option>
+    <option value="9999">Permanente</option>
+</select>
+
+<button onclick="gerar()">GERAR KEY</button>
+
+<div class="result" id="out"></div>
+</div>
+
+<script>
+// 🔑 ALTERE SOMENTE A SENHA
+const SENHA_ADMIN = "paulo123";
+
+// 🔒 TOKEN SECRETO (liga site + script)
+const SECRET = "PAULO_XT_2026";
+
+// 📱 ID ÚNICO DO DISPOSITIVO
+function deviceID() {
+    return btoa(
+        navigator.userAgent +
+        screen.width +
+        screen.height +
+        navigator.language
+    );
+}
+
+// 🔐 GERADOR DE KEY
+function gerarKey() {
+    return "PX-" + Math.random().toString(36).substr(2,8).toUpperCase();
+}
+
+function gerar() {
+    const senha = document.getElementById("senha").value;
+    if (senha !== SENHA_ADMIN) {
+        alert("Senha incorreta!");
+        return;
+    }
+
+    const dias = parseInt(document.getElementById("dias").value);
+    const agora = Date.now();
+    const expira = dias === 9999 ? 9999999999999 : agora + dias*86400000;
+
+    const keyData = {
+        key: gerarKey(),
+        device: deviceID(),
+        expira: expira,
+        secret: SECRET
+    };
+
+    // salva local (dispositivo autorizado)
+    localStorage.setItem("PAULO_XT_KEY", JSON.stringify(keyData));
+
+    document.getElementById("out").innerHTML =
+        `<b>KEY:</b> ${keyData.key}<br>
+         <b>Status:</b> AUTORIZADA<br>
+         <b>Dispositivo:</b> BLOQUEADO<br>
+         <b>Validade:</b> ${dias === 9999 ? "Permanente" : dias + " dias"}`;
+}
+</script>
+</body>
+</html>
